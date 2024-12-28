@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>中国春节倒计时</title>
+    <!-- 引入Google Fonts的Ma Shan Zheng字体 -->
+    <link href="https://ooo.0x0.ooo/2024/12/25/OEFMXM.jpg" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        body, html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            font-family: 'Ma Shan Zheng', cursive;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 背景图片样式 */
+        .background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('https://ooo.0x0.ooo/2024/12/28/OEKMoB.png') no-repeat center center/cover;
+            z-index: -3;
+            opacity: 1.2;
+        }
+
+        /* 背景淡入淡出动画 */
+        @keyframes backgroundFade {
+            0% { opacity: 0.7; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.7; }
+        }
+
+        /* 烟花动画容器 */
+        .fireworks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -2;
+            pointer-events: none; /* 确保点击事件不被烟花遮挡 */
+        }
+
+        /* 烟花样式 */
+        .firework {
+            position: absolute;
+            bottom: 0;
+            background: radial-gradient(circle, #ff0000 0%, rgba(255,0,0,0) 80%);
+            border-radius: 50%;
+            opacity: 0;
+            animation: firework 2s ease-out infinite;
+        }
+
+        @keyframes firework {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-800px) scale(10.5);
+                opacity: 0;
+            }
+        }
+
+        /* 主容器样式 */
+        .container {
+            text-align: center;
+            padding: 30px 40px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+            animation: fadeIn 1s ease-out;
+            z-index: 1; /* 确保内容在烟花之上 */
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            animation: glow 2s infinite alternate;
+        }
+
+        .time, .cny-date, .countdown {
+            font-size: 2em; /* 增大时钟字体 */
+            margin: 15px 0;
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        /* 文字动画 */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 文字发光效果 */
+        @keyframes glow {
+            from { text-shadow: 2px 2px 8px rgba(255,215,0,0.7); }
+            to { text-shadow: 2px 2px 20px rgba(255,215,0,1); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .time, .cny-date, .countdown {
+                font-size: 1.5em; /* 移动端适当减小字体 */
+            }
+            .container {
+                padding: 20px 25px;
+            }
+        }
+
+        /* 烟花样式调整 */
+        .firework {
+            width: 5px;
+            height: 20px;
+            background: radial-gradient(circle, #ff0000 0%, rgba(255,0,0,0) 70%);
+            filter: blur(2px);
+        }
+
+        /* 底部滚动字幕 */
+        .scrolling-message {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            font-size: 65px;
+            color: yellow;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 10px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .scrolling-message span {
+            display: inline-block;
+            padding-left: 100%; /* 初始位置在屏幕右侧 */
+            animation: scrollText 10s linear infinite; /* 加快滚动速度 */
+        }
+
+        @keyframes scrollText {
+            0% {
+                transform: translateX(0); /* 从屏幕右侧边缘开始 */
+            }
+            100% {
+                transform: translateX(-100%); /* 滚动到屏幕左侧 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景图片 -->
+    <div class="background"></div>
+
+    <!-- 烟花动画 -->
+    <div class="fireworks">
+        <!-- 生成多个烟花 -->
+        <div class="firework" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="firework" style="left: 30%; animation-delay: 0.5s;"></div>
+        <div class="firework" style="left: 50%; animation-delay: 1s;"></div>
+        <div class="firework" style="left: 70%; animation-delay: 1.5s;"></div>
+        <div class="firework" style="left: 90%; animation-delay: 2s;"></div>
+    </div>
+
+    <div class="container">
+        <h1>中国春节倒计时</h1>
+        <div class="time">当前时间：<span id="currentTime">--:--:--</span></div>
+        <div class="cny-date">中国春节日期：<span id="cnyDate">--</span></div>
+        <div class="countdown">倒计时：<span id="countdown">--天 --小时 --分钟 --秒</span></div>
+    </div>
+
+    <!-- 在页面左右两侧中间添加以下代码 -->
+    <div style="position: fixed; top: 50%; left: 150px; transform: translateY(-50%); font-size: 100px; color: yellow; font-weight: bold;">
+        真诚、友善
+    </div>
+    <div style="position: fixed; top: 50%; right: 150px; transform: translateY(-50%); font-size: 100px; color: yellow; font-weight: bold;">
+        团结、专业
+    </div>
+
+    <!-- 在页面底部添加滚动字幕 -->
+    <div class="scrolling-message">
+        <span>LINUX DO年度寄语：愿新的一年，我们继续在技术海洋中携手成长。我为人人、人人为我，真诚、友善地对待他人，不以一己私利为重，这就是LINUX DO的家庭原则！</span>
+    </div>
+
+    <script>
+        // 当前时间和倒计时
+        const currentTimeEl = document.getElementById('currentTime');
+        const cnyDateEl = document.getElementById('cnyDate');
+        const countdownEl = document.getElementById('countdown');
+
+        // 中国春节日期（2020-2030）
+        const cnyDates = {
+            2020: '2020-01-25',
+            2021: '2021-02-12',
+            2022: '2022-02-01',
+            2023: '2023-01-22',
+            2024: '2024-02-10',
+            2025: '2025-01-29',
+            2026: '2026-02-17',
+            2027: '2027-02-06',
+            2028: '2028-01-26',
+            2029: '2029-02-13',
+            2030: '2030-02-03'
+        };
+
+        function updateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const date = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            currentTimeEl.textContent = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+
+            // 获取中国春节日期
+            let cnyYear = year;
+            let cnyDateStr = cnyDates[cnyYear];
+            let cnyDate = cnyDateStr ? new Date(cnyDateStr + 'T00:00:00') : null;
+
+            // 如果今年的中国春节已经过去，使用明年的
+            if (cnyDate && now > cnyDate) {
+                cnyYear += 1;
+                cnyDateStr = cnyDates[cnyYear];
+                if(cnyDateStr){
+                   cnyDate = new Date(cnyDateStr + 'T00:00:00');
+                } else {
+                    // 如果超出预设年份，提示无法计算
+                    cnyDateEl.textContent = '无法计算';
+                    countdownEl.textContent = '--';
+                    return;
+                }
+            }
+             if (cnyDate) {
+                  const cnyMonth = String(cnyDate.getMonth() + 1).padStart(2, '0');
+                  const cnyDay = String(cnyDate.getDate()).padStart(2, '0');
+                  cnyDateEl.textContent = `${cnyYear}-${cnyMonth}-${cnyDay}`;
+
+                 // 计算倒计时
+                 const diff = cnyDate - now;
+                   if(diff <=0){
+                   countdownEl.textContent = '今天是中国春节！';
+                    return;
+                 }
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                 const hoursLeft = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                 const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);
+                countdownEl.textContent = `${days}天 ${hoursLeft}小时 ${minutesLeft}分钟 ${secondsLeft}秒`;
+            } else {
+                // 如果无法获取中国春节日期
+                cnyDateEl.textContent = '无法计算';
+                countdownEl.textContent = '--';
+            }
+        }
+
+        // 更新每秒
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
