@@ -25,47 +25,20 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: url('https://ooo.0x0.ooo/2024/12/28/OEKMoB.png') no-repeat center center/cover;
+            background: url('https://ooo.0x0.ooo/2024/12/29/OEZi5l.png') no-repeat center center/cover;
             z-index: -3;
             opacity: 1.2;
         }
 
-        /* 背景淡入淡出动画 */
-        @keyframes backgroundFade {
-            0% { opacity: 0.7; }
-            50% { opacity: 0.8; }
-            100% { opacity: 0.7; }
-        }
-
-        /* 烟花动画容器 */
-        .fireworks {
+        /* 烟花画布 */
+        #fireworks-canvas {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            z-index: -2;
+            z-index: -1; /* 确保烟花在背景之上，内容之下 */
             pointer-events: none; /* 确保点击事件不被烟花遮挡 */
-        }
-
-        /* 烟花样式 */
-        .firework {
-            position: absolute;
-            bottom: 0;
-            background: radial-gradient(circle, #ff0000 0%, rgba(255,0,0,0) 80%);
-            border-radius: 50%;
-            opacity: 0;
-            animation: firework 2s ease-out infinite;
-        }
-
-        @keyframes firework {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-800px) scale(10.5);
-                opacity: 0;
-            }
         }
 
         /* 主容器样式 */
@@ -125,14 +98,6 @@
             }
         }
 
-        /* 烟花样式调整 */
-        .firework {
-            width: 5px;
-            height: 20px;
-            background: radial-gradient(circle, #ff0000 0%, rgba(255,0,0,0) 70%);
-            filter: blur(2px);
-        }
-
         /* 底部滚动字幕 */
         .scrolling-message {
             position: fixed;
@@ -151,7 +116,7 @@
         .scrolling-message span {
             display: inline-block;
             padding-left: 100%; /* 初始位置在屏幕右侧 */
-            animation: scrollText 20s linear infinite; /* 减慢滚动速度 */
+            animation: scrollText 15s linear infinite; /* 减慢滚动速度 */
         }
 
         @keyframes scrollText {
@@ -162,22 +127,40 @@
                 transform: translateX(-100%); /* 滚动到屏幕左侧 */
             }
         }
+
+        /* 禁止声音按钮 */
+        .sound-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .sound-btn svg {
+            fill: white;
+            width: 24px;
+            height: 24px;
+        }
     </style>
 </head>
 <body>
     <!-- 背景图片 -->
     <div class="background"></div>
 
-    <!-- 烟花动画 -->
-    <div class="fireworks">
-        <!-- 生成多个烟花 -->
-        <div class="firework" style="left: 10%; animation-delay: 0s;"></div>
-        <div class="firework" style="left: 30%; animation-delay: 0.5s;"></div>
-        <div class="firework" style="left: 50%; animation-delay: 1s;"></div>
-        <div class="firework" style="left: 70%; animation-delay: 1.5s;"></div>
-        <div class="firework" style="left: 90%; animation-delay: 2s;"></div>
-    </div>
+    <!-- 烟花画布 -->
+    <canvas id="fireworks-canvas"></canvas>
 
+ 
+    <!-- 主内容 -->
     <div class="container">
         <h1>中国春节倒计时</h1>
         <div class="time">当前时间：<span id="currentTime">--:--:--</span></div>
@@ -185,17 +168,10 @@
         <div class="countdown">倒计时：<span id="countdown">--天 --小时 --分钟 --秒</span></div>
     </div>
 
-    <!-- 在页面左右两侧中间添加以下代码 -->
-    <div style="position: fixed; top: 50%; left: 100px; transform: translateY(-50%); font-size: 100px; color: #D9D919; font-weight: bold;">
-        真诚、友善
-    </div>
-    <div style="position: fixed; top: 50%; right: 100px; transform: translateY(-50%); font-size: 100px; color: #D9D919; font-weight: bold;">
-        团结、专业
-    </div>
-
+    
     <!-- 在页面底部添加滚动字幕 -->
     <div class="scrolling-message">
-        <span>LINUX DO年度寄语：愿新的一年，我们继续在技术海洋中携手成长。  我为人人、人人为我，真诚、友善地对待他人，不以一己私利为重，这就是LINUX DO！</span>
+        <span>LINUX DO年度寄语：愿新的一年，我们继续在技术海洋中携手成长！我为人人，人人为我，真诚、友善地对待他人，不以一己私利为重，这技术LINUX DO！</span>
     </div>
 
     <script>
@@ -273,6 +249,109 @@
         // 更新每秒
         updateTime();
         setInterval(updateTime, 1000);
+
+        // 烟花效果
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // 烟花粒子类
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 2 + 1;
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 5,
+                    y: (Math.random() - 0.5) * 5
+                };
+                this.alpha = 1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.draw();
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= 0.01;
+            }
+        }
+
+        // 烟花类
+        class Firework {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.particles = [];
+                for (let i = 0; i < 100; i++) {
+                    this.particles.push(new Particle(this.x, this.y, this.color));
+                }
+            }
+
+            update() {
+                this.particles.forEach((particle, index) => {
+                    if (particle.alpha <= 0) {
+                        this.particles.splice(index, 1);
+                    } else {
+                        particle.update();
+                    }
+                });
+            }
+        }
+
+        // 烟花数组
+        let fireworks = [];
+
+        // 动画循环
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除画布，保留背景
+
+            fireworks.forEach((firework, index) => {
+                if (firework.particles.length === 0) {
+                    fireworks.splice(index, 1);
+                } else {
+                    firework.update();
+                }
+            });
+        }
+
+        // 随机生成烟花
+        function createFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
+            fireworks.push(new Firework(x, y, color));
+        }
+
+        // 每 500 毫秒生成一个烟花
+        setInterval(createFirework, 500);
+
+        // 开始动画
+        animate();
+
+        // 禁止声音按钮逻辑
+        //const soundBtn = document.querySelector('.sound-btn');
+        //let isSoundOn = true;
+
+        //soundBtn.addEventListener('click', () => {
+         //   isSoundOn = !isSoundOn;
+         //   soundBtn.innerHTML = isSoundOn
+         //       ? '<path id="icon-sound-on" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>'
+         //       : '<path id="icon-sound-off" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+        //});
     </script>
 </body>
 </html>
